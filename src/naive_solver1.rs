@@ -1,10 +1,10 @@
 pub use crate::solver::*;
 
-pub struct NaiveSolver{
+pub struct NaiveSolver1{
     //pub m_solver : Vec<[i32 ; NUM_X * NUM_Y * NUM_X * NUM_Y]>,
 }
 
-impl Solver for NaiveSolver{
+impl Solver for NaiveSolver1{
     fn solve_sdoku(&self, sdoku : &mut [usize], solve_list : &mut Vec<[usize ; NUM_X * NUM_Y * NUM_X * NUM_Y]>) -> i32{
         let mut empty_list : Vec<COORD1> = Vec::new();
         for i in 0..(NUM_X * NUM_Y){
@@ -15,20 +15,15 @@ impl Solver for NaiveSolver{
             }
         }
 
-        self.solve_sdoku(sdoku, &mut empty_list, solve_list)
+        self.solve_sdoku(sdoku, &mut empty_list.as_slice(), solve_list)
     }
 }
 
-impl NaiveSolver{
-    fn solve_sdoku(&self, sdoku : &[usize], empty_list : &mut Vec<COORD1>, solve_list : &mut Vec<[usize ; NUM_X * NUM_Y * NUM_X * NUM_Y]>) -> i32{
-        let mut sdoku_temp : [usize; NUM_X * NUM_Y * NUM_X * NUM_Y] = [0 ; NUM_X * NUM_Y * NUM_X * NUM_Y];
-        sdoku_temp.copy_from_slice(sdoku);
-        
-        //self.print_emptylist(emptyList);
-        //self.print_sdoku(&sdokuTemp);
-        //self.print_sdoku(sdoku);
-
+impl NaiveSolver1{
+    fn solve_sdoku(&self, sdoku : &mut [usize], empty_list : &[COORD1], solve_list : &mut Vec<[usize ; NUM_X * NUM_Y * NUM_X * NUM_Y]>) -> i32{
         if empty_list.len() == 0{
+            let mut sdoku_temp : [usize; NUM_X * NUM_Y * NUM_X * NUM_Y] = [0 ; NUM_X * NUM_Y * NUM_X * NUM_Y];
+            sdoku_temp.copy_from_slice(sdoku);
             solve_list.push(sdoku_temp);
             return 1;
         }
@@ -38,14 +33,11 @@ impl NaiveSolver{
         }
         
         let mut result = 0;
-        //let mut emptylistTemp = (*emptyList[1..];
-        let mut empty_list_temp : Vec<COORD1> = Vec::new();
-        for i in 1..empty_list.len(){
-            empty_list_temp.push(COORD1 { x: empty_list[i].x, y: empty_list[i].y, group: empty_list[i].group, val: empty_list[i].val });
-        }
+        
         for (_, elem) in available_list.iter().enumerate(){
-            sdoku_temp[empty_list[0].x + empty_list[0].y * NUM_X * NUM_Y] = *elem;
-            let temp_result = self.solve_sdoku(&sdoku_temp, &mut empty_list_temp, solve_list);
+            sdoku[empty_list[0].x + empty_list[0].y * NUM_X * NUM_Y] = *elem;
+            let temp_result = self.solve_sdoku(sdoku, &empty_list[1..], solve_list);
+            sdoku[empty_list[0].x + empty_list[0].y * NUM_X * NUM_Y] = 0;
             if temp_result > 1{
                 result = 2;
                 break;

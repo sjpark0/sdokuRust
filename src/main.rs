@@ -1,12 +1,18 @@
 mod solver;
 mod naive_solver;
+mod naive_solver1;
+mod fast_solver;
 
 pub use crate::solver::*;
 pub use crate::naive_solver::*;
+pub use crate::naive_solver1::*;
+pub use crate::fast_solver::*;
+
+use std::time::Instant;
 
 
 fn main() {
-    let mut sdoku : [i32 ; NUM_X * NUM_Y * NUM_X * NUM_Y] = [0 ; NUM_X * NUM_Y * NUM_X * NUM_Y];
+    let mut sdoku : [usize ; NUM_X * NUM_Y * NUM_X * NUM_Y] = [0 ; NUM_X * NUM_Y * NUM_X * NUM_Y];
     //let mut sdokuOriginal : [i32 ; NUM_X * NUM_Y] = [0 ; NUM_X * NUM_Y];
     sdoku[1] = 9;
 	sdoku[5] = 6;
@@ -32,10 +38,47 @@ fn main() {
 	sdoku[74] = 9;
 	sdoku[79] = 2;
 
-    let sdoku_original: [i32; NUM_X * NUM_Y * NUM_X * NUM_Y] = sdoku.clone();
+    let sdoku_original: [usize; NUM_X * NUM_Y * NUM_X * NUM_Y] = sdoku.clone();
+	
+	let mut solve_list : Vec<[usize ; NUM_X * NUM_Y * NUM_X * NUM_Y]> = Vec::new();
+    let solver : naive_solver1::NaiveSolver1 = NaiveSolver1 { /*m_solver : Vec::new()*/ };
+    sdoku = sdoku_original.clone();
+	let start_time = Instant::now();
+	solver.solve_sdoku(&mut sdoku, &mut solve_list);
+	let end_time = Instant::now();
+    let elapsed_time = end_time.duration_since(start_time);
+    println!("Naive Solver1 Elapsed time: {:?}", elapsed_time);
+	solver.print_sdoku(&solve_list[0]);
 
-    let solver : naive_solver::NaiveSolver = NaiveSolver { m_solver : Vec::new() };
-    solver.print_sdoku(&sdoku);
-    solver.print_sdoku(&sdoku_original);
+	let mut solve_list : Vec<[usize ; NUM_X * NUM_Y * NUM_X * NUM_Y]> = Vec::new();
+    let solver : naive_solver::NaiveSolver = NaiveSolver { /*m_solver : Vec::new()*/ };
+    sdoku = sdoku_original.clone();
+	let start_time = Instant::now();
+	solver.solve_sdoku(&mut sdoku, &mut solve_list);
+	let end_time = Instant::now();
+    let elapsed_time = end_time.duration_since(start_time);
+    println!("Naive Solver Elapsed time: {:?}", elapsed_time);
+	solver.print_sdoku(&solve_list[0]);
+
+	let mut solve_list : Vec<[usize ; NUM_X * NUM_Y * NUM_X * NUM_Y]> = Vec::new();
+    let solver : naive_solver1::NaiveSolver1 = NaiveSolver1 { /*m_solver : Vec::new()*/ };
+    sdoku = sdoku_original.clone();
+	let start_time = Instant::now();
+	solver.solve_sdoku(&mut sdoku, &mut solve_list);
+	let end_time = Instant::now();
+    let elapsed_time = end_time.duration_since(start_time);
+    println!("Naive Solver1 Elapsed time: {:?}", elapsed_time);
+	solver.print_sdoku(&solve_list[0]);
+
+	let mut solve_list : Vec<[usize ; NUM_X * NUM_Y * NUM_X * NUM_Y]> = Vec::new();
+    let solver : fast_solver::FastSolver = FastSolver { /*m_solver : Vec::new()*/ };
+    sdoku = sdoku_original.clone();
+	let start_time = Instant::now();
+	solver.solve_sdoku(&mut sdoku, &mut solve_list);
+	let end_time = Instant::now();
+    let elapsed_time = end_time.duration_since(start_time);
+    println!("Fast Solver Elapsed time: {:?}", elapsed_time);
+	solver.print_sdoku(&solve_list[0]);
+	
     
 }

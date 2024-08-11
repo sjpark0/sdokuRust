@@ -1,10 +1,10 @@
 pub use crate::solver::*;
 
-pub struct NaiveSolver1{
+pub struct NaiveSolver_0{
     //pub m_solver : Vec<[i32 ; NUM_X * NUM_Y * NUM_X * NUM_Y]>,
 }
 
-impl Solver for NaiveSolver1{
+impl Solver for NaiveSolver_0{
     fn solve_sdoku(&self, sdoku : &mut [usize], solve_list : &mut Vec<[usize ; NUM_X * NUM_Y * NUM_X * NUM_Y]>) -> i32{
         let mut empty_list : Vec<COORD1> = Vec::new();
         for i in 0..(NUM_X * NUM_Y){
@@ -19,7 +19,7 @@ impl Solver for NaiveSolver1{
     }
 }
 
-impl NaiveSolver1{
+impl NaiveSolver_0{
     fn solve_sdoku(&self, sdoku : &mut [usize], empty_list : &[COORD1], solve_list : &mut Vec<[usize ; NUM_X * NUM_Y * NUM_X * NUM_Y]>) -> i32{
         if empty_list.len() == 0{
             let mut sdoku_temp : [usize; NUM_X * NUM_Y * NUM_X * NUM_Y] = [0 ; NUM_X * NUM_Y * NUM_X * NUM_Y];

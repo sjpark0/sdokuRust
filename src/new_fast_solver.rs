@@ -1,10 +1,10 @@
 pub use crate::solver::*;
 
-pub struct FastSolver{
+pub struct NewFastSolver{
     //pub m_solver : Vec<[i32 ; NUM_X * NUM_Y * NUM_X * NUM_Y]>,
 }
 
-impl Solver for FastSolver{
+impl Solver for NewFastSolver{
     fn solve_sdoku(&self, sdoku : &mut [usize], solve_list : &mut Vec<[usize ; NUM_X * NUM_Y * NUM_X * NUM_Y]>) -> i32{
         let mut empty_list : Vec<COORD1> = Vec::new();
         for i in 0..(NUM_X * NUM_Y){
@@ -22,7 +22,7 @@ impl Solver for FastSolver{
     }
 }
 
-impl FastSolver{
+impl NewFastSolver{
     fn solve_sdoku(&self, sdoku : &[usize], empty_list : &mut Vec<COORD1>, solve_list : &mut Vec<[usize ; NUM_X * NUM_Y * NUM_X * NUM_Y]>) -> i32{
         let mut sdoku_temp : [usize; NUM_X * NUM_Y * NUM_X * NUM_Y] = [0 ; NUM_X * NUM_Y * NUM_X * NUM_Y];
         sdoku_temp.copy_from_slice(sdoku);
@@ -43,7 +43,7 @@ impl FastSolver{
             }
             if available_list.len() == 1{
                 sdoku_temp[empty_list_temp[index].x + empty_list_temp[index].y * NUM_X * NUM_Y] = available_list[0];
-                empty_list_temp.remove(index);
+                empty_list_temp.swap_remove(index);
                 index = 0;
             } else{
                 index += 1;
@@ -56,7 +56,7 @@ impl FastSolver{
         }
         let tmp = COORD1{ x : empty_list_temp[0].x, y : empty_list_temp[0].y, group : empty_list_temp[0].group, val : empty_list_temp[0].val};
         //empty_list_temp[0].clone();
-        empty_list_temp.remove(0);
+        empty_list_temp.swap_remove(0);
 
         let available_list = self.get_available_numbers(sdoku, tmp.y, tmp.x);
         if available_list.len() == 0{

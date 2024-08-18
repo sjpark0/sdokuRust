@@ -5,6 +5,14 @@ mod fast_solver;
 mod fast_solver_0;
 mod fast_solver3;
 mod new_fast_solver;
+mod new_fast_solver_1;
+
+mod new_fast_solver1;
+mod new_fast_solver1_1;
+
+mod new_fast_solver2;
+mod new_fast_solver3;
+mod new_fast_solver3_0;
 
 pub use crate::solver::*;
 pub use crate::naive_solver::*;
@@ -13,7 +21,12 @@ pub use crate::fast_solver::*;
 pub use crate::fast_solver_0::*;
 pub use crate::fast_solver3::*;
 pub use crate::new_fast_solver::*;
-
+pub use crate::new_fast_solver_1::*;
+pub use crate::new_fast_solver1::*;
+pub use crate::new_fast_solver1_1::*;
+pub use crate::new_fast_solver2::*;
+pub use crate::new_fast_solver3::*;
+pub use crate::new_fast_solver3_0::*;
 
 
 use std::time::Instant;
@@ -107,6 +120,75 @@ fn main() {
     let elapsed_time = end_time.duration_since(start_time);
     println!("Fast3 Solver Elapsed time: {:?}", elapsed_time);
 	solver.print_sdoku(&solve_list[0]);
+
+	let mut solve_list : Vec<[usize ; NUM_X * NUM_Y * NUM_X * NUM_Y]> = Vec::new();
+    let solver : new_fast_solver::NewFastSolver = NewFastSolver { /*m_solver : Vec::new()*/ };
+    sdoku = sdoku_original.clone();
+	let start_time = Instant::now();
+	solver.solve_sdoku(&mut sdoku, &mut solve_list);
+	let end_time = Instant::now();
+    let elapsed_time = end_time.duration_since(start_time);
+    println!("New Fast Solver Elapsed time: {:?}", elapsed_time);
+	solver.print_sdoku(&solve_list[0]);
+
+	let mut solve_list : Vec<[usize ; NUM_X * NUM_Y * NUM_X * NUM_Y]> = Vec::new();
+    let solver : new_fast_solver_1::NewFastSolver_1 = NewFastSolver_1 { /*m_solver : Vec::new()*/ };
+    sdoku = sdoku_original.clone();
+	let start_time = Instant::now();
+	solver.solve_sdoku(&mut sdoku, &mut solve_list);
+	let end_time = Instant::now();
+    let elapsed_time = end_time.duration_since(start_time);
+    println!("New Fast Solver _1 Elapsed time: {:?}", elapsed_time);
+	solver.print_sdoku(&solve_list[0]);
 	
+	let mut solve_list : Vec<[usize ; NUM_X * NUM_Y * NUM_X * NUM_Y]> = Vec::new();
+    let solver : new_fast_solver1::NewFastSolver1 = NewFastSolver1 { /*m_solver : Vec::new()*/ };
+    sdoku = sdoku_original.clone();
+	let start_time = Instant::now();
+	solver.solve_sdoku(&mut sdoku, &mut solve_list);
+	let end_time = Instant::now();
+    let elapsed_time = end_time.duration_since(start_time);
+    println!("New Fast Solver 1 Elapsed time: {:?}", elapsed_time);
+	solver.print_sdoku(&solve_list[0]);
+
+	let mut solve_list : Vec<[usize ; NUM_X * NUM_Y * NUM_X * NUM_Y]> = Vec::new();
+    let solver : new_fast_solver1_1::NewFastSolver1_1 = NewFastSolver1_1 { /*m_solver : Vec::new()*/ };
+    sdoku = sdoku_original.clone();
+	let start_time = Instant::now();
+	solver.solve_sdoku(&mut sdoku, &mut solve_list);
+	let end_time = Instant::now();
+    let elapsed_time = end_time.duration_since(start_time);
+    println!("New Fast Solver 1_1 Elapsed time: {:?}", elapsed_time);
+	solver.print_sdoku(&solve_list[0]);
+
+	let mut solve_list : Vec<[usize ; NUM_X * NUM_Y * NUM_X * NUM_Y]> = Vec::new();
+    let solver : new_fast_solver2::NewFastSolver2 = NewFastSolver2 { /*m_solver : Vec::new()*/ };
+    sdoku = sdoku_original.clone();
+	let start_time = Instant::now();
+	solver.solve_sdoku(&mut sdoku, &mut solve_list);
+	let end_time = Instant::now();
+    let elapsed_time = end_time.duration_since(start_time);
+    println!("New Fast Solver 2 Elapsed time: {:?}", elapsed_time);
+	solver.print_sdoku(&solve_list[0]);
     
+	let mut solve_list : Vec<[usize ; NUM_X * NUM_Y * NUM_X * NUM_Y]> = Vec::new();
+    let solver : new_fast_solver3::NewFastSolver3 = NewFastSolver3 { /*m_solver : Vec::new()*/ };
+    sdoku = sdoku_original.clone();
+	let start_time = Instant::now();
+	solver.solve_sdoku(&mut sdoku, &mut solve_list);
+	let end_time = Instant::now();
+    let elapsed_time = end_time.duration_since(start_time);
+    println!("New Fast Solver 3 Elapsed time: {:?}", elapsed_time);
+	solver.print_sdoku(&solve_list[0]);
+
+	let mut solve_list : Vec<[usize ; NUM_X * NUM_Y * NUM_X * NUM_Y]> = Vec::new();
+    let solver : new_fast_solver3_0::NewFastSolver3_0 = NewFastSolver3_0 { /*m_solver : Vec::new()*/ };
+    sdoku = sdoku_original.clone();
+	let start_time = Instant::now();
+	solver.solve_sdoku(&mut sdoku, &mut solve_list);
+	let end_time = Instant::now();
+    let elapsed_time = end_time.duration_since(start_time);
+    println!("New Fast Solver 3_0 Elapsed time: {:?}", elapsed_time);
+	solver.print_sdoku(&solve_list[0]);
+
 }

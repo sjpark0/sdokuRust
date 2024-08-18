@@ -49,7 +49,8 @@ impl FastSolver3{
         for i in 0..empty_list.len(){
             empty_list_temp.push(COORD1 { x: empty_list[i].x, y: empty_list[i].y, group: empty_list[i].group, val: empty_list[i].val });
         }
-        let mut available_list_temp : [Vec<usize>; NUM_X * NUM_Y * NUM_X * NUM_Y] = array_init::array_init(|i| available_list[i].clone());
+        //let mut available_list_temp : [Vec<usize>; NUM_X * NUM_Y * NUM_X * NUM_Y] = array_init::array_init(|i| available_list[i].clone());
+        let mut available_list_temp : [Vec<usize>; NUM_X * NUM_Y * NUM_X * NUM_Y] = array_init::array_init(|i| if available_list[i].len() > 0 { available_list[i].clone() } else {Vec::new()});
         
         let mut index;
         let mut pos = 0;
@@ -97,7 +98,8 @@ impl FastSolver3{
                     available_list_temp[index1] = available_list_temp2[index1].clone();
                 } else if empty_list_temp[m].y == tmp.y {
                     available_list_temp[index1] = available_list_temp2[index1].clone();
-                } else if(empty_list_temp[m].x / NUM_X == tmp.x / NUM_X) && (empty_list_temp[m].y / NUM_Y == tmp.y / NUM_Y){
+                //} else if(empty_list_temp[m].x / NUM_X == tmp.x / NUM_X) && (empty_list_temp[m].y / NUM_Y == tmp.y / NUM_Y){
+                } else if empty_list_temp[m].group == (tmp.x/NUM_X + tmp.y/NUM_Y*NUM_Y){
                     available_list_temp[index1] = available_list_temp2[index1].clone();
                 }
                 

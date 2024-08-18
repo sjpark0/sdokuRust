@@ -15,6 +15,15 @@ pub trait Solver{
             println!("{}, {}, {}, {}, {}", i, elem.x, elem.y, elem.group, elem.val);
         }
     }
+    fn print_emptylist_original(&self, empty_list_original : &Vec<COORD2>){
+        for (i, elem) in empty_list_original.iter().enumerate(){
+            print!("{}, {}, {}, {}, {} => [", i, elem.x, elem.y, elem.group, elem.val);
+            for elem2 in elem.available_list.iter(){
+                print!("{} ", elem2);
+            }
+            println!("]");
+        }
+    }
     fn get_available_numbers(&self, sdoku : &[usize], y : usize, x : usize) -> Vec<usize>{
         let mut res : Vec<usize> = Vec::new();
         let mut is_avail : bool;
@@ -61,4 +70,12 @@ pub struct COORD1{
     pub y : usize,
     pub group : usize,
     pub val : usize,
+}
+
+pub struct COORD2{
+    pub x : usize,
+    pub y : usize,
+    pub group : usize,
+    pub val : usize,
+    pub available_list : Vec<usize>,
 }

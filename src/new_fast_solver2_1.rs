@@ -1,16 +1,16 @@
 pub use crate::solver::*;
 
-pub struct NewFastSolver2{
+pub struct NewFastSolver2_1{
     //pub m_solver : Vec<[i32 ; NUM_X * NUM_Y * NUM_X * NUM_Y]>,
 }
 
-impl Solver for NewFastSolver2{
+impl Solver for NewFastSolver2_1{
     fn solve_sdoku(&self, sdoku : &mut [usize], solve_list : &mut Vec<[usize ; NUM_X * NUM_Y * NUM_X * NUM_Y]>) -> i32{
-        let mut empty_list : Vec<(usize, usize, usize, usize, Vec<usize>)> = Vec::new();
+        let mut empty_list : Vec<(usize, usize, usize, usize)> = Vec::new();
         for i in 0..(NUM_X * NUM_Y){
             for j in 0..(NUM_X * NUM_Y){
                 if sdoku[j + i * NUM_X * NUM_Y] == 0{
-                    empty_list.push((j, i, (j / NUM_X) + (i / NUM_Y) * NUM_Y, 0, self.get_available_numbers(sdoku, i, j) ));
+                    empty_list.push((j, i, (j / NUM_X) + (i / NUM_Y) * NUM_Y, 0));
                 }
             }
         }
@@ -21,31 +21,34 @@ impl Solver for NewFastSolver2{
     
 }
 
-impl NewFastSolver2{
-    fn assign_value(&self, assign_list : &mut Vec<(usize, usize, usize, usize, Vec<usize>)>, x : usize, y : usize, val : usize, empty_list : &mut Vec<(usize, usize, usize, usize, Vec<usize>)>){
+impl NewFastSolver2_1{
+    fn assign_value(&self, assign_list : &mut Vec<(usize, usize, usize, usize)>, x : usize, y : usize, val : usize, empty_list : &mut Vec<(usize, usize, usize, usize)>, available_list : &mut Vec<Vec<usize>>){
         let length = assign_list.len();
         assign_list[length - 1].3 = val;
 
         //for elem in empty_list.iter(){
         for i in 0..empty_list.len(){
             if empty_list[i].0 == x{
-                empty_list[i].4.retain(|&x| x != val);
+                available_list[i].retain(|&x| x != val);
             //    break;
             } else if empty_list[i].1 == y{
-                empty_list[i].4.retain(|&x| x != val);
+                available_list[i].retain(|&x| x != val);
             //    break;
             //} else if(empty_list[i].x / NUM_X == x / NUM_X) && (empty_list[i].y / NUM_Y == y / NUM_Y){
             } else if empty_list[i].2 == (x/NUM_X + y/NUM_Y*NUM_Y){
-                empty_list[i].4.retain(|&x| x != val);
+                available_list[i].retain(|&x| x != val);
             //    break;
             }
         }
     }
-    fn solve_sdoku(&self, sdoku : &mut [usize], empty_list : &mut Vec<(usize, usize, usize, usize, Vec<usize>)>, solve_list : &mut Vec<[usize ; NUM_X * NUM_Y * NUM_X * NUM_Y]>) -> i32{
-        let mut assign_list : Vec<(usize, usize, usize, usize, Vec<usize>)> = Vec::new();
-        let mut assign_list_list : Vec<Vec<(usize, usize, usize, usize, Vec<usize>)>> = Vec::new();
-        
-        let result = self.solve_sdoku_r(&mut assign_list, empty_list, &mut assign_list_list);
+    fn solve_sdoku(&self, sdoku : &mut [usize], empty_list : &mut Vec<(usize, usize, usize, usize)>, solve_list : &mut Vec<[usize ; NUM_X * NUM_Y * NUM_X * NUM_Y]>) -> i32{
+        let mut assign_list : Vec<(usize, usize, usize, usize)> = Vec::new();
+        let mut available_list : Vec<Vec<usize>> = Vec::new();
+        let mut assign_list_list : Vec<Vec<(usize, usize, usize, usize)>> = Vec::new();
+        for elem in empty_list.iter(){
+            available_list.push(self.get_available_numbers(sdoku, elem.1, elem.0));
+        }
+        let result = self.solve_sdoku_r(&mut assign_list, empty_list, &mut available_list, &mut assign_list_list);
         
         let mut sdoku_temp : [usize; NUM_X * NUM_Y * NUM_X * NUM_Y] = [0 ; NUM_X * NUM_Y * NUM_X * NUM_Y];
         sdoku_temp.copy_from_slice(sdoku);
@@ -56,24 +59,26 @@ impl NewFastSolver2{
         return result;
     }
     
-    fn solve_sdoku_r(&self, assign_list : &mut Vec<(usize, usize, usize, usize, Vec<usize>)>, empty_list : &mut Vec<(usize, usize, usize, usize, Vec<usize>)>, assign_list_list : &mut Vec<Vec<(usize, usize, usize, usize, Vec<usize>)>>) -> i32{
-        let mut empty_list_temp: Vec<(usize, usize, usize, usize, Vec<usize>)> = empty_list.clone();
-        let mut assign_list_temp: Vec<(usize, usize, usize, usize, Vec<usize>)> = assign_list.clone();
-        
+    fn solve_sdoku_r(&self, assign_list : &mut Vec<(usize, usize, usize, usize)>, empty_list : &mut Vec<(usize, usize, usize, usize)>, available_list : &mut Vec<Vec<usize>>, assign_list_list : &mut Vec<Vec<(usize, usize, usize, usize)>>) -> i32{
+        let mut empty_list_temp: Vec<(usize, usize, usize, usize)> = empty_list.clone();
+        let mut assign_list_temp: Vec<(usize, usize, usize, usize)> = assign_list.clone();
+        let mut available_list_temp: Vec<Vec<usize>> = available_list.clone();
         let mut pos = 0;
 
         while pos < empty_list_temp.len(){
-            if empty_list_temp[pos].4.len() == 0{
+            
+            if available_list_temp[pos].len() == 0{
                 return 0;
             }
-            if empty_list_temp[pos].4.len() == 1{
+            if available_list_temp[pos].len() == 1{
                 let x = empty_list_temp[pos].0;
                 let y = empty_list_temp[pos].1;
-                let val = empty_list_temp[pos].4[0];
+                let val = available_list_temp[pos][0];
 
-                assign_list_temp.push(empty_list_temp[pos].clone());
+                assign_list_temp.push((x, y, empty_list_temp[0].2, val));
                 empty_list_temp.remove(pos);
-                self.assign_value(&mut assign_list_temp, x, y, val, &mut empty_list_temp);
+                available_list_temp.remove(pos);
+                self.assign_value(&mut assign_list_temp, x, y, val, &mut empty_list_temp, &mut available_list_temp);
                 pos = 0;
             } else{
                 pos += 1;
@@ -89,30 +94,31 @@ impl NewFastSolver2{
 	    let x = empty_list_temp[0].0;
         let y = empty_list_temp[0].1;
         let group = empty_list_temp[0].2;
-        let tmp_list = empty_list_temp[0].4.clone();
-        assign_list_temp.push(empty_list_temp[0].clone());
+        let tmp_list = available_list_temp[0].clone();
+        assign_list_temp.push((x, y, group, 0));
         
         empty_list_temp.remove(0);
-        
+        available_list_temp.remove(0);
+
         let mut modify_list : Vec<usize> = Vec::new();
         //let mut empty_list_temp2: Vec<(usize, usize, usize, usize, Vec<usize>)> = Vec::new();
-        let mut available_list_temp = Vec::new();
+        let mut available_list_temp2 = Vec::new();
         for i in 0..empty_list_temp.len(){
             let elem = &empty_list_temp[i];
             if elem.0 == x{
-                available_list_temp.push(elem.4.clone());
+                available_list_temp2.push(available_list_temp[i].clone());
                 //empty_list_temp2.push(elem.clone());
                 modify_list.push(i);
             } else if elem.1 == y{
-                available_list_temp.push(elem.4.clone());
+                available_list_temp2.push(available_list_temp[i].clone());
                 //empty_list_temp2.push(elem.clone());
                 modify_list.push(i);
             } else if elem.2 == group{
-                available_list_temp.push(elem.4.clone());
+                available_list_temp2.push(available_list_temp[i].clone());
                 //empty_list_temp2.push(elem.clone());
                 modify_list.push(i);
             } else{
-                available_list_temp.push(elem.4.clone());
+                available_list_temp2.push(available_list_temp[i].clone());
                 //empty_list_temp2.push(elem.clone());
                 
             }
@@ -122,8 +128,8 @@ impl NewFastSolver2{
         
         //for elem in available_list_temp[index].iter(){
         for i in 0..tmp_list.len(){
-            self.assign_value(&mut assign_list_temp, x, y, tmp_list[i], &mut empty_list_temp);
-            let temp_result = self.solve_sdoku_r(&mut assign_list_temp, &mut empty_list_temp, assign_list_list);
+            self.assign_value(&mut assign_list_temp, x, y, tmp_list[i], &mut empty_list_temp, &mut available_list_temp);
+            let temp_result = self.solve_sdoku_r(&mut assign_list_temp, &mut empty_list_temp, &mut available_list_temp, assign_list_list);
             
             if temp_result > 1{
                 result = 2;
@@ -133,11 +139,11 @@ impl NewFastSolver2{
 
             for m in modify_list.iter(){
                 if empty_list_temp[*m].0 == x {
-                    empty_list_temp[*m].4 = available_list_temp[*m].clone();
+                    available_list_temp[*m] = available_list_temp2[*m].clone();
                 } else if empty_list_temp[*m].1 == y {
-                    empty_list_temp[*m].4 = available_list_temp[*m].clone();
+                    available_list_temp[*m] = available_list_temp2[*m].clone();
                 } else if empty_list_temp[*m].2 == (x/NUM_X + y/NUM_Y*NUM_Y){
-                    empty_list_temp[*m].4 = available_list_temp[*m].clone();
+                    available_list_temp[*m] = available_list_temp2[*m].clone();
                 }
             }
         }

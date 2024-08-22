@@ -10,15 +10,15 @@ pub trait Solver{
             println!("");
         }
     }
-    fn print_emptylist(&self, empty_list : &Vec<COORD1>){
+    fn print_emptylist(&self, empty_list : &Vec<(usize, usize, usize, usize)>){
         for (i, elem) in empty_list.iter().enumerate(){
-            println!("{}, {}, {}, {}, {}", i, elem.x, elem.y, elem.group, elem.val);
+            println!("{}, {}, {}, {}, {}", i, elem.0, elem.1, elem.2, elem.3);
         }
     }
-    fn print_emptylist_original(&self, empty_list_original : &Vec<COORD2>){
+    fn print_emptylist_original(&self, empty_list_original : &Vec<(usize, usize, usize, usize, Vec<usize>)>){
         for (i, elem) in empty_list_original.iter().enumerate(){
-            print!("{}, {}, {}, {}, {} => [", i, elem.x, elem.y, elem.group, elem.val);
-            for elem2 in elem.available_list.iter(){
+            print!("{}, {}, {}, {}, {} => [", i, elem.0, elem.1, elem.2, elem.3);
+            for elem2 in elem.4.iter(){
                 print!("{} ", elem2);
             }
             println!("]");
@@ -65,6 +65,7 @@ pub trait Solver{
 }
 
 //#[derive(Clone, Copy)]
+/* 
 pub struct COORD1{
     pub x : usize,
     pub y : usize,
@@ -78,4 +79,4 @@ pub struct COORD2{
     pub group : usize,
     pub val : usize,
     pub available_list : Vec<usize>,
-}
+}*/

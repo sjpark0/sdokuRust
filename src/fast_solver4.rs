@@ -2,11 +2,11 @@
 pub use crate::solver::*;
 use array_init;
 
-pub struct FastSolver3{
+pub struct FastSolver4{
     //pub m_solver : Vec<[i32 ; NUM_X * NUM_Y * NUM_X * NUM_Y]>,
 }
 
-impl Solver for FastSolver3{
+impl Solver for FastSolver4{
     fn solve_sdoku(&self, sdoku : &mut [usize], solve_list : &mut Vec<[usize ; NUM_X * NUM_Y * NUM_X * NUM_Y]>) -> i32{
         let mut empty_list : Vec<(usize, usize, usize, usize)> = Vec::new();
         for i in 0..(NUM_X * NUM_Y){
@@ -25,7 +25,7 @@ impl Solver for FastSolver3{
     }
 }
 
-impl FastSolver3{
+impl FastSolver4{
     fn assign_value(&self, sdoku : &mut [usize], x : usize, y : usize, val : usize, available_list : &mut [Vec<usize>], empty_list : &Vec<(usize, usize, usize, usize)>) {
         let index = x + y * NUM_X * NUM_Y;
         sdoku[index] = val;

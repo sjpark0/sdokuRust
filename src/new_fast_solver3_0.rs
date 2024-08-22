@@ -1,17 +1,16 @@
 pub use crate::solver::*;
-use std::{collections::HashMap, iter::empty};
-
+use std::collections::HashMap;
 pub struct NewFastSolver3_0{
     //pub m_solver : Vec<[i32 ; NUM_X * NUM_Y * NUM_X * NUM_Y]>,
 }
 
 impl Solver for NewFastSolver3_0{
     fn solve_sdoku(&self, sdoku : &mut [usize], solve_list : &mut Vec<[usize ; NUM_X * NUM_Y * NUM_X * NUM_Y]>) -> i32{
-        let mut empty_list : Vec<COORD1> = Vec::new();
+        let mut empty_list : Vec<(usize, usize, usize, usize)> = Vec::new();
         for i in 0..(NUM_X * NUM_Y){
             for j in 0..(NUM_X * NUM_Y){
                 if sdoku[j + i * NUM_X * NUM_Y] == 0{
-                    empty_list.push(COORD1 { x: j, y: i, group: (j / NUM_X) + (i / NUM_Y) * NUM_Y, val: 0 });
+                    empty_list.push((j, i, (j / NUM_X) + (i / NUM_Y) * NUM_Y, 0 ));
                 }
             }
         }
@@ -37,15 +36,15 @@ impl NewFastSolver3_0{
             
         }
     }
-    fn solve_sdoku(&self, sdoku : &mut [usize], empty_list : &mut Vec<COORD1>, solve_list : &mut Vec<[usize ; NUM_X * NUM_Y * NUM_X * NUM_Y]>) -> i32{
+    fn solve_sdoku(&self, sdoku : &mut [usize], empty_list : &mut Vec<(usize, usize, usize, usize)>, solve_list : &mut Vec<[usize ; NUM_X * NUM_Y * NUM_X * NUM_Y]>) -> i32{
         let mut assign_map: HashMap<(usize, usize, usize), usize> = HashMap::new();
         let mut assign_map_list : Vec<HashMap<(usize, usize, usize), usize>> = Vec::new();
         let mut empty_map: HashMap<(usize, usize, usize), Vec<usize>> = HashMap::new();
         let mut empty_lists : Vec<(usize, usize, usize)> = Vec::new();
 
         for elem in empty_list.iter(){
-            empty_map.insert((elem.x, elem.y, elem.group), self.get_available_numbers(sdoku, elem.y, elem.x));
-            empty_lists.push((elem.x, elem.y, elem.group));
+            empty_map.insert((elem.0, elem.1, elem.2), self.get_available_numbers(sdoku, elem.1, elem.0));
+            empty_lists.push((elem.0, elem.1, elem.2));
         }
         
         let result = self.solve_sdoku_r(&mut assign_map, &mut empty_map, &mut empty_lists, &mut assign_map_list);

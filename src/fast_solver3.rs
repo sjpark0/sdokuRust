@@ -26,20 +26,27 @@ impl Solver for FastSolver3{
 }
 
 impl FastSolver3{
-    fn assign_value(&self, sdoku : &mut [usize], x : usize, y : usize, val : usize, available_list : &mut [Vec<usize>], empty_list : &Vec<(usize, usize, usize, usize)>) {
+    fn assign_value(&self, sdoku : &mut [usize], x : usize, y : usize, val : usize, available_list : &mut [Vec<usize>], empty_list : &Vec<(usize, usize, usize, usize)>) -> Vec<usize>{
         let index = x + y * NUM_X * NUM_Y;
+        let mut res = Vec::new();
         sdoku[index] = val;
 
-        for elem in empty_list.iter(){
-            let index1 = elem.0 + elem.1 * NUM_X * NUM_Y;
-            if elem.0 == x{
+        for i in 0..empty_list.len(){
+            let index1 = empty_list[i].0 + empty_list[i].1 * NUM_X * NUM_Y;
+            let pre_len = available_list[index1].len();
+            if empty_list[i].0 == x{
                 available_list[index1].retain(|&x| x != val);
-            } else if elem.1 == y{
+            } else if empty_list[i].1 == y{
                 available_list[index1].retain(|&x| x != val);
-            } else if(elem.0 / NUM_X == x / NUM_X) && (elem.1 / NUM_Y == y / NUM_Y){
+            } else if(empty_list[i].0 / NUM_X == x / NUM_X) && (empty_list[i].1 / NUM_Y == y / NUM_Y){
                 available_list[index1].retain(|&x| x != val);
             }
+            let post_len = available_list[index1].len();
+            if pre_len != post_len{
+                res.push(index1);
+            }
         }
+        return res;
     }
     fn solve_sdoku(&self, sdoku : &[usize], empty_list : &mut Vec<(usize, usize, usize, usize)>, available_list : &[Vec<usize>], solve_list : &mut Vec<[usize ; NUM_X * NUM_Y * NUM_X * NUM_Y]>) -> i32{
         let mut sdoku_temp : [usize; NUM_X * NUM_Y * NUM_X * NUM_Y] = [0 ; NUM_X * NUM_Y * NUM_X * NUM_Y];
@@ -76,11 +83,9 @@ impl FastSolver3{
         let mut result = 0;
 	    index = tmp.0 + tmp.1 * NUM_X * NUM_Y;
         let tmp_list = available_list_temp[index].clone();
-        let available_list_temp2 : [Vec<usize>; NUM_X * NUM_Y * NUM_X * NUM_Y] = array_init::array_init(|i| available_list_temp[i].clone());
-        
         
         for elem in tmp_list.iter(){
-            self.assign_value(&mut sdoku_temp, tmp.0, tmp.1, *elem, &mut available_list_temp, &empty_list_temp);
+            let val_list = self.assign_value(&mut sdoku_temp, tmp.0, tmp.1, *elem, &mut available_list_temp, &empty_list_temp);
             let temp_result = self.solve_sdoku(&sdoku_temp, &mut empty_list_temp, &mut available_list_temp, solve_list);
             if temp_result > 1{
                 result = 2;
@@ -88,21 +93,10 @@ impl FastSolver3{
             }
             result += temp_result;
 
-            for m in 0..empty_list_temp.len() {
-                let index1 = empty_list_temp[m].0 + empty_list_temp[m].1 * NUM_X * NUM_Y;
-                if empty_list_temp[m].0 == tmp.0 {
-                    available_list_temp[index1] = available_list_temp2[index1].clone();
-                } else if empty_list_temp[m].1 == tmp.1 {
-                    available_list_temp[index1] = available_list_temp2[index1].clone();
-                //} else if(empty_list_temp[m].x / NUM_X == tmp.x / NUM_X) && (empty_list_temp[m].y / NUM_Y == tmp.y / NUM_Y){
-                } else if empty_list_temp[m].2 == (tmp.0/NUM_X + tmp.1/NUM_Y*NUM_Y){
-                    available_list_temp[index1] = available_list_temp2[index1].clone();
-                }
-                
-                /*else if empty_list_temp[m].group == (tmp.x/NUM_X + tmp.y/NUM_Y*NUM_Y) {
-                    available_list_temp[index1] = available_list_temp2[index1].clone();
-                }*/
+            for m in val_list.iter() {
+                available_list_temp[*m].push(*elem);
             }
+
         }
         return result;
     }

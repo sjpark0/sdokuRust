@@ -22,24 +22,27 @@ impl Solver for NewFastSolver2_1{
 }
 
 impl NewFastSolver2_1{
-    fn assign_value(&self, assign_list : &mut Vec<(usize, usize, usize, usize)>, x : usize, y : usize, val : usize, empty_list : &mut Vec<(usize, usize, usize, usize)>, available_list : &mut Vec<Vec<usize>>){
+    fn assign_value(&self, assign_list : &mut Vec<(usize, usize, usize, usize)>, x : usize, y : usize, val : usize, empty_list : &mut Vec<(usize, usize, usize, usize)>, available_list : &mut Vec<Vec<usize>>) -> Vec<usize>{
         let length = assign_list.len();
         assign_list[length - 1].3 = val;
-
+        
         //for elem in empty_list.iter(){
+        let mut res = Vec::new();
         for i in 0..empty_list.len(){
+            let pre_len = available_list[i].len();
             if empty_list[i].0 == x{
                 available_list[i].retain(|&x| x != val);
-            //    break;
             } else if empty_list[i].1 == y{
                 available_list[i].retain(|&x| x != val);
-            //    break;
-            //} else if(empty_list[i].x / NUM_X == x / NUM_X) && (empty_list[i].y / NUM_Y == y / NUM_Y){
             } else if empty_list[i].2 == (x/NUM_X + y/NUM_Y*NUM_Y){
                 available_list[i].retain(|&x| x != val);
-            //    break;
+            }
+            let post_len = available_list[i].len();
+            if post_len != pre_len{
+                res.push(i);
             }
         }
+        return res;
     }
     fn solve_sdoku(&self, sdoku : &mut [usize], empty_list : &mut Vec<(usize, usize, usize, usize)>, solve_list : &mut Vec<[usize ; NUM_X * NUM_Y * NUM_X * NUM_Y]>) -> i32{
         let mut assign_list : Vec<(usize, usize, usize, usize)> = Vec::new();
@@ -100,35 +103,8 @@ impl NewFastSolver2_1{
         empty_list_temp.remove(0);
         available_list_temp.remove(0);
 
-        let mut modify_list : Vec<usize> = Vec::new();
-        //let mut empty_list_temp2: Vec<(usize, usize, usize, usize, Vec<usize>)> = Vec::new();
-        let mut available_list_temp2 = Vec::new();
-        for i in 0..empty_list_temp.len(){
-            let elem = &empty_list_temp[i];
-            if elem.0 == x{
-                available_list_temp2.push(available_list_temp[i].clone());
-                //empty_list_temp2.push(elem.clone());
-                modify_list.push(i);
-            } else if elem.1 == y{
-                available_list_temp2.push(available_list_temp[i].clone());
-                //empty_list_temp2.push(elem.clone());
-                modify_list.push(i);
-            } else if elem.2 == group{
-                available_list_temp2.push(available_list_temp[i].clone());
-                //empty_list_temp2.push(elem.clone());
-                modify_list.push(i);
-            } else{
-                available_list_temp2.push(available_list_temp[i].clone());
-                //empty_list_temp2.push(elem.clone());
-                
-            }
-        }
-
-        
-        
-        //for elem in available_list_temp[index].iter(){
         for i in 0..tmp_list.len(){
-            self.assign_value(&mut assign_list_temp, x, y, tmp_list[i], &mut empty_list_temp, &mut available_list_temp);
+            let val_list = self.assign_value(&mut assign_list_temp, x, y, tmp_list[i], &mut empty_list_temp, &mut available_list_temp);
             let temp_result = self.solve_sdoku_r(&mut assign_list_temp, &mut empty_list_temp, &mut available_list_temp, assign_list_list);
             
             if temp_result > 1{
@@ -137,14 +113,8 @@ impl NewFastSolver2_1{
             }
             result += temp_result;
 
-            for m in modify_list.iter(){
-                if empty_list_temp[*m].0 == x {
-                    available_list_temp[*m] = available_list_temp2[*m].clone();
-                } else if empty_list_temp[*m].1 == y {
-                    available_list_temp[*m] = available_list_temp2[*m].clone();
-                } else if empty_list_temp[*m].2 == (x/NUM_X + y/NUM_Y*NUM_Y){
-                    available_list_temp[*m] = available_list_temp2[*m].clone();
-                }
+            for m in val_list.iter(){
+                available_list_temp[*m].push(tmp_list[i]);
             }
         }
         
